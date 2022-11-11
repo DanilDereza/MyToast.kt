@@ -37,20 +37,20 @@ class Config {
     var imageAli = "file:storage/ImageAli.png"
     var imageLike = "file:storage/ImageLike.png"
     var soundPath = "storage/Sale.mp3"
-    var PosX = "Right"
-    var PosY = "Bottom"
+    var PosX = "Right" //  Left / Right
+    var PosY = "Bottom"  //  Bottom / Top
     var title = "Во-оля"
     var titleStyle = "-fx-text-fill: Indigo; -fx-font-size: 18px; -fx-padding: 0 0 0 25"
     var message = "Buy the Soap"
     var messageStyle = "-fx-text-fill: red; -fx-font-size: 16px; -fx-padding: 0 0 0 10"
     var appName = "AliExpression"
     var appNameStyle = "-fx-text-fill: DarkSlateGray; -fx-font-size: 12px; -fx-padding: 0 0 0 32"
-    var btn1 = "True"
+    var btn1 = "True"  // True / False
     var btn1Style = "-fx-background-color: LimeGreen; -fx-text-fill: Yellow; -fx-font-size: 17px"
-    var btn2 = "True"
+    var btn2 = "True"  // True / False
     var btn2Style = "-fx-background-color: FireBrick; -fx-text-fill: Black; -fx-font-size: 17px"
     var cursor = "HAND"
-    var TransitionAnimType = "Translate"
+    var TransitionAnimType = "Translate" //  Translate / Fade
     var rootStyle = "-fx-background-color: #ffffff; -fx-padding: 10 10 10 10"
 }
 
