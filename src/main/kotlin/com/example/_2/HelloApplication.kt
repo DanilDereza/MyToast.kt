@@ -5,10 +5,12 @@ import javafx.animation.TranslateTransition
 import javafx.application.Application
 import javafx.application.Platform
 import javafx.event.EventHandler
+import javafx.geometry.Insets
 import javafx.scene.Cursor
 import javafx.scene.Scene
 import javafx.scene.control.Button
 import javafx.scene.control.Label
+import javafx.scene.control.TextField
 import javafx.scene.image.Image
 import javafx.scene.input.MouseEvent
 import javafx.scene.layout.BorderPane
@@ -33,25 +35,29 @@ enum class ImageStyle {
 class Config {
     var alpha = 0.9
     var openTime = 7000.0
-    var imageType = ImageStyle.CIRCLE
+    var imageType = ImageStyle.CIRCLE // CIRCLE / RECTANGLE
     var imageAli = "file:storage/ImageAli.png"
     var imageLike = "file:storage/ImageLike.png"
     var soundPath = "storage/Sale.mp3"
-    var PosX = "Right"
-    var PosY = "Bottom"
+    var PosX = "Right" //  Left / Right
+    var PosY = "Bottom"  //  Bottom / Top
     var title = "Во-оля"
     var titleStyle = "-fx-text-fill: Indigo; -fx-font-size: 18px; -fx-padding: 0 0 0 25"
     var message = "Buy the Soap"
     var messageStyle = "-fx-text-fill: red; -fx-font-size: 16px; -fx-padding: 0 0 0 10"
     var appName = "AliExpression"
-    var appNameStyle = "-fx-text-fill: DarkSlateGray; -fx-font-size: 12px; -fx-padding: 0 0 0 32"
-    var btn1 = "True"
+    var appNameStyle = "-fx-text-fill: DarkSlateGray; -fx-font-size: 12px; -fx-padding: 0 0 0 100"
+    var msg = "Введите текст"
+    var msgStyle = "-fx-text-fill: Maroon; -fx-font-size: 14px; -fx-padding: 7 7 0 32"
+    var reportStyle = "-fx-text-fill: Maroon; -fx-font-size: 14px; -fx-padding: 7 7 0 32"
+    var btn1 = "True"  // True / False
     var btn1Style = "-fx-background-color: LimeGreen; -fx-text-fill: Yellow; -fx-font-size: 17px"
-    var btn2 = "True"
+    var btn2 = "True"  // True / False
     var btn2Style = "-fx-background-color: FireBrick; -fx-text-fill: Black; -fx-font-size: 17px"
     var cursor = "HAND"
-    var TransitionAnimType = "Translate"
-    var rootStyle = "-fx-background-color: #ffffff; -fx-padding: 10 10 10 10"
+    var TransitionAnimType = "Translate" // Translate / Fade
+    var rootStyle = "-fx-background-color: #ffffff; -fx-padding: 20 20 20 20"
+    var textField = "On" // On / Off
 }
 
 class Toast {
@@ -66,14 +72,14 @@ class Toast {
     else {
         Circle(60.0, 60.0, 60.0)
     }
-    private val h = Media(Paths.get(config.soundPath).toUri().toString())
-    val mediaPlayer = MediaPlayer(h)
+    private val path = Media(Paths.get(config.soundPath).toUri().toString())
+    val mediaPlayer = MediaPlayer(path)
 
     class Builder {
         private var config = Config()
 
         fun build(): Toast  {
-            var toast = Toast()
+            val toast = Toast()
             toast.config = config
             toast.build()
 
@@ -95,17 +101,19 @@ class Toast {
         val vbox = VBox()
         val hbox = HBox()
 
-
+        val text = TextField()
         val title = Label(config.title)
         val message = Label(config.message)
         val appName = Label(config.appName)
+        val msg = Label(config.msg)
+        msg.style = config.msgStyle
         title.style = config.titleStyle
         message.style = config.messageStyle
         appName.style = config.appNameStyle
-        vbox.children.addAll(title, message, appName)
+        vbox.children.addAll(title, message, appName, msg, text)
 
         if(config.btn1 == "True") {
-            var button1 = Button("Accept")
+            val button1 = Button("Accept")
             button1.style = config.btn1Style
             button1.cursor = Cursor.cursor(config.cursor)
 
@@ -119,7 +127,7 @@ class Toast {
             hbox.children.add(button1)
         }
         if(config.btn2 == "True") {
-            var button2 = Button("Close")
+            val button2 = Button("Close")
             button2.style = config.btn2Style
             button2.cursor = Cursor.cursor(config.cursor)
 
@@ -130,7 +138,16 @@ class Toast {
 
             hbox.children.add(button2)
         }
-        hbox.setSpacing(85.0)
+
+        var report = text.getText()
+        //text.onAction(KEY_RELEASED())
+
+        var report2 = Label(report)
+        vbox.children.add(report2)
+        //report.style = config.reportStyle
+        hbox.setSpacing(150.0)
+        hbox.padding = Insets(10.0, 0.0, 0.0, 0.0)
+        vbox.setSpacing(2.5)
         box.children.add(vbox)
         box.children.add(hbox)
         root.center = box
@@ -228,32 +245,30 @@ class Toast {
         if(config.soundPath.isEmpty()){
             return
         }
-        mediaPlayer.play();
+        mediaPlayer.play()
         mediaPlayer.setStopTime(Duration(7500.0))
         mediaPlayer.setVolume(0.15)
     }
 
     fun start() {
         windows.show()
-        openAnimation();
-        music();
+        openAnimation()
+        music()
         val thread = Thread {
             try {
                 Thread.sleep(config.openTime.toLong())
             } catch (e: InterruptedException) {
                 e.printStackTrace()
             }
-            closeAnimation()
         }
         Thread(thread).start()
     }
-
 }
 
 
 class SomeClass: Application() {
     override fun start(p0: Stage?) {
-        var toast = Toast.Builder().build()
+        val toast = Toast.Builder().build()
         toast.start()
     }
     companion object {
