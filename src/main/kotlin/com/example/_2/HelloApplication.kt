@@ -5,7 +5,6 @@ import javafx.animation.TranslateTransition
 import javafx.application.Application
 import javafx.application.Platform
 import javafx.event.EventHandler
-import javafx.geometry.Insets
 import javafx.scene.Cursor
 import javafx.scene.Scene
 import javafx.scene.control.Button
@@ -14,8 +13,9 @@ import javafx.scene.control.TextField
 import javafx.scene.image.Image
 import javafx.scene.input.MouseEvent
 import javafx.scene.layout.BorderPane
-import javafx.scene.layout.HBox
-import javafx.scene.layout.VBox
+import javafx.scene.layout.GridPane
+//import javafx.scene.layout.HBox
+//import javafx.scene.layout.VBox
 import javafx.scene.media.Media
 import javafx.scene.paint.Color
 import javafx.scene.paint.ImagePattern
@@ -34,7 +34,7 @@ enum class ImageStyle {
 
 class Config {
     var alpha = 0.9
-    var openTime = 7000.0
+    var openTime = 10000.0
     var imageType = ImageStyle.CIRCLE // CIRCLE / RECTANGLE
     var imageAli = "file:storage/ImageAli.png"
     var imageLike = "file:storage/ImageLike.png"
@@ -42,21 +42,22 @@ class Config {
     var PosX = "Right" //  Left / Right
     var PosY = "Bottom"  //  Bottom / Top
     var title = "Во-оля"
-    var titleStyle = "-fx-text-fill: Indigo; -fx-font-size: 18px; -fx-padding: 0 0 0 25"
+    var titleStyle = "-fx-text-fill: Indigo; -fx-font-size: 18px; -fx-padding: -10 0 0 50"
     var message = "Buy the Soap"
-    var messageStyle = "-fx-text-fill: red; -fx-font-size: 16px; -fx-padding: 0 0 0 10"
+    var messageStyle = "-fx-text-fill: red; -fx-font-size: 16px; -fx-padding: 50 0 0 45"
     var appName = "AliExpression"
-    var appNameStyle = "-fx-text-fill: DarkSlateGray; -fx-font-size: 12px; -fx-padding: 0 0 0 100"
+    var appNameStyle = "-fx-text-fill: DarkSlateGray; -fx-font-size: 12px; -fx-padding: -5 0 0 100"
     var msg = "Введите текст"
-    var msgStyle = "-fx-text-fill: Maroon; -fx-font-size: 14px; -fx-padding: 7 7 0 32"
-    var reportStyle = "-fx-text-fill: Maroon; -fx-font-size: 14px; -fx-padding: 7 7 0 32"
+    var msgStyle = "-fx-text-fill: Maroon; -fx-font-size: 14px; -fx-padding: -30 0 0 32"
+    var reportStyle = "-fx-text-fill: BlueViolet; -fx-font-size: 13px; -fx-padding: 0 0 5 50"
     var btn1 = "True"  // True / False
     var btn1Style = "-fx-background-color: LimeGreen; -fx-text-fill: Yellow; -fx-font-size: 17px"
     var btn2 = "True"  // True / False
-    var btn2Style = "-fx-background-color: FireBrick; -fx-text-fill: Black; -fx-font-size: 17px"
+    var btn2Style = "-fx-background-color: FireBrick; -fx-text-fill: Black; -fx-font-size: 17px;"
     var cursor = "HAND"
+    var button_event = "music_stop"  //music / text
     var TransitionAnimType = "Translate" // Translate / Fade
-    var rootStyle = "-fx-background-color: #ffffff; -fx-padding: 20 20 20 20"
+    var rootStyle = "-fx-background-color: #ffffff; -fx-padding: 10 10 10 10"
     var textField = "On" // On / Off
 }
 
@@ -64,7 +65,7 @@ class Toast {
     private var config = Config()
     private val windows = Stage()
     private var root = BorderPane()
-    private var box = HBox()
+    private val grid = GridPane()
     private var primaryScreenBounds = Screen.getPrimary().getVisualBounds()
     private val iconBorder = if (config.imageType == ImageStyle.RECTANGLE) {
         Rectangle(100.0, 100.0)   //width,  height
@@ -98,8 +99,6 @@ class Toast {
 
         setImage()
 
-        val vbox = VBox()
-        val hbox = HBox()
 
         val text = TextField()
         val title = Label(config.title)
@@ -110,48 +109,61 @@ class Toast {
         title.style = config.titleStyle
         message.style = config.messageStyle
         appName.style = config.appNameStyle
-        vbox.children.addAll(title, message, appName, msg, text)
 
-        if(config.btn1 == "True") {
+        grid.setHgap(1.0)
+        grid.setVgap(2.0)
+        grid.add(title, 2, 0, 1, 1)
+        grid.add(message, 2, 0, 1, 1)
+        grid.add(appName, 2, 1, 1, 1)
+        if (config.textField == "On") {
+            grid.add(msg, 2, 3, 1, 1)
+            grid.add(text, 2, 4, 1, 1)
+            text.setOnAction {
+                text.isVisible = false
+                val report = Label(text.getText())
+                report.style = config.reportStyle
+                grid.add(report, 2, 4)
+            }
+        }
+
+        if (config.btn1 == "True") {
             val button1 = Button("Accept")
             button1.style = config.btn1Style
             button1.cursor = Cursor.cursor(config.cursor)
-
-            button1.addEventHandler(MouseEvent.MOUSE_CLICKED){
-                message.text = "Successfully"
-                iconBorder.setFill(ImagePattern(Image(config.imageLike)))
-                closeAnimation()
-                mediaPlayer.stop()
+            button1.addEventHandler(MouseEvent.MOUSE_CLICKED) {
+                if (config.button_event == "text"){
+                    message.text = "Successfully"
+                    iconBorder.setFill(ImagePattern(Image(config.imageLike)))
+                    closeAnimation()
+                    mediaPlayer.stop()
+                }
+                else if(config.button_event == "music_stop") {
+                    message.text = "more_load"
+                    mediaPlayer.volume = (mediaPlayer.volume + 0.1)
+                }
             }
-
-            hbox.children.add(button1)
+            grid.add(button1, 1, 5, 1, 1)
         }
-        if(config.btn2 == "True") {
+        if (config.btn2 == "True") {
             val button2 = Button("Close")
             button2.style = config.btn2Style
             button2.cursor = Cursor.cursor(config.cursor)
 
-            button2.addEventHandler(MouseEvent.MOUSE_CLICKED){
+            button2.addEventHandler(MouseEvent.MOUSE_CLICKED) {
                 closeAnimation()
                 mediaPlayer.stop()
             }
-
-            hbox.children.add(button2)
+            grid.add(button2, 2, 5, 1, 1)
         }
 
-        var report = text.getText()
-        //text.onAction(KEY_RELEASED())
-
-        var report2 = Label(report)
-        vbox.children.add(report2)
-        //report.style = config.reportStyle
-        hbox.setSpacing(150.0)
-        hbox.padding = Insets(10.0, 0.0, 0.0, 0.0)
-        vbox.setSpacing(2.5)
-        box.children.add(vbox)
-        box.children.add(hbox)
-        root.center = box
-        root.bottom = hbox
+//        hbox.setSpacing(150.0)
+//        hbox.padding = Insets(10.0, 0.0, 0.0, 0.0)
+//        vbox.setSpacing(2.5)
+//        box.children.add(vbox)
+//        box.children.add(hbox)
+//        root.center = box
+//        root.bottom = hbox
+        root.center = grid
     }
 
     private fun setImage() {
@@ -160,7 +172,7 @@ class Toast {
         }
 
         iconBorder.setFill(ImagePattern(Image(config.imageAli)))
-        box.children.add(iconBorder)
+        grid.add(iconBorder, 0, 0, 2, 3)
     }
 
     private fun openAnimation() {
@@ -260,11 +272,11 @@ class Toast {
             } catch (e: InterruptedException) {
                 e.printStackTrace()
             }
+            closeAnimation()
         }
         Thread(thread).start()
     }
 }
-
 
 class SomeClass: Application() {
     override fun start(p0: Stage?) {
